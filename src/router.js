@@ -2,6 +2,7 @@ import express from 'express';
 const route= express.Router();
 
 import { getBooksHandler, getBookByIdHandler } from './controllers/books.js';
+import { getAuthorsHandler, getAuthorByIdHandler , createAuthorHandler, updateAuthorHandler, deleteAuthorHandler} from './controllers/authors.js';
 
 /**
  * @openapi
@@ -42,5 +43,151 @@ route.get('/books', getBooksHandler);
  *         description: Internal server error
  */
 route.get('/books/:id', getBookByIdHandler);
+
+/**
+ * @openapi
+ * /authors:
+ *   get:
+ *     summary: Get all authors
+ *     tags:
+ *       - Authors
+ *     responses:
+ *       200:
+ *         description: A list of authors
+ *       500:
+ *         description: Failed to retrieve authors
+ */
+route.get('/authors', getAuthorsHandler);
+
+/**
+ * @openapi
+ * /authors/{id}:
+ *   get:
+ *     summary: Get an author by ID
+ *     tags:
+ *       - Authors
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the author
+ *     responses:
+ *       200:
+ *         description: The requested author
+ *       404:
+ *         description: Author not found
+ *       500:
+ *         description: Failed to retrieve author
+ */
+
+route.get('/authors/:id', getAuthorByIdHandler);
+
+/**
+ * @openapi
+ * /authors:
+ *   post:
+ *     summary: Create a new author
+ *     tags:
+ *       - Authors
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - id
+ *               - name
+ *               - birthYear
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 example: a4
+ *               name:
+ *                 type: string
+ *                 example: John Smith
+ *               birthYear:
+ *                 type: number
+ *                 example: 1988
+ *     responses:
+ *       201:
+ *         description: Author created successfully
+ *       400:
+ *         description: Invalid or missing author data
+ *       500:
+ *         description: Failed to create author
+ */
+route.post('/authors', createAuthorHandler);
+
+/**
+ * @openapi
+ * /authors/{id}:
+ *   put:
+ *     summary: Update an existing author
+ *     tags:
+ *       - Authors
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the author to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - birthYear
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Maya Rivera Updated
+ *               birthYear:
+ *                 type: number
+ *                 example: 1986
+ *     responses:
+ *       200:
+ *         description: Author updated successfully
+ *       400:
+ *         description: Missing or invalid author information
+ *       404:
+ *         description: Author not found
+ *       500:
+ *         description: Failed to update author
+ */
+route.put('/authors/:id', updateAuthorHandler);
+
+
+/**
+ * @openapi
+ * /authors/{id}:
+ *   delete:
+ *     summary: Delete an author
+ *     tags:
+ *       - Authors
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the author to delete
+ *     responses:
+ *       204:
+ *         description: Author deleted successfully
+ *       404:
+ *         description: Author not found
+ *       409:
+ *         description: Cannot delete author because books still reference this author
+ *       500:
+ *         description: Failed to delete author
+ */
+route.delete('/authors/:id', deleteAuthorHandler);
 
 export default route;
